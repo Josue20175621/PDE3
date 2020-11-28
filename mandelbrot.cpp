@@ -29,8 +29,9 @@ int main()
     int x, y;
 
     // Plot window
-    double x_start = -1.5, x_end = 0.7, y_start = -1, y_end = 1;
-    
+    // double x_start = -1.5, x_end = 0.7, y_start = -1, y_end = 1;
+    double x_start = -2.25, x_end = 1.25, y_start = -1.75, y_end = 1.75;
+
     // Toma el tiempo
     auto start = std::chrono::high_resolution_clock::now();
     
