@@ -3,12 +3,21 @@
 #include <fstream>
 #include <omp.h>
 
+#define CYAN "\033[36m"
+
+#define BOLDYELLOW "\033[1m\033[33m"
+
+#define RESET "\033[0m"
+
 #define MAX_ITERATIONS 80
+
+// Dimensiones de la imagen
 #define WIDTH 500
 #define HEIGHT 500
+
 #define NUM_THREADS 4
 
-int mandelbrot_set(std::complex<double> c);
+int mandelbrot(std::complex<double> c);
 
 int main(void)
 {
@@ -22,14 +31,15 @@ int main(void)
     int k;
     int l;
 
+    // Nombre del archivo
     std::string filename = "mandelbrot_openmp.ppm";
 
+    // Class para escribir archivos
     std::ofstream output(filename, std::ios_base::out | std::ios_base::binary);
 
     int x, y;
 
     // Plot window
-    // double x_start = -1.5, x_end = 0.7, y_start = -1, y_end = 1;
     double x_start = -2.25, x_end = 1.25, y_start = -1.75, y_end = 1.75;
 
     omp_set_num_threads(NUM_THREADS);
@@ -50,7 +60,7 @@ int main(void)
                 };
 
                 // Calcula numero de iteraciones
-                int iterations = mandelbrot_set(c);
+                int iterations = mandelbrot(c);
                 
                 // Almacena el color del pixel
                 color[x][y] = 255 - (int)(iterations * 255 / MAX_ITERATIONS);
@@ -59,9 +69,10 @@ int main(void)
     }
     end = omp_get_wtime();
 
-    // Escribe los primeros 3 bytes para identificar el archivo como PPM
+    // Escribe el header de un archivo PPM P3 WIDTH HEIGHT 255
     output << "P3" << std::endl << WIDTH << ' ' << HEIGHT << std::endl << 255 << std::endl;
-    // Escribe al archivo los valores de cada pixel
+    
+    // Por cada pixel
     for (i = 0; i < WIDTH; i++)
     {
         for (k = 0; k < HEIGHT; k += 4)
@@ -78,14 +89,15 @@ int main(void)
     
     output.close();
     std::cout << "\n";
-    std::cout << "Se escribio el PPM en el archivo \"" << filename << "\".\n";
-    std::cout << "Tiempo " << end - start << " segundos\n";
+    std::cout << "Se escribio el PPM en el archivo " << BOLDYELLOW << "\"" << filename << "\"" << RESET << "." 
+              << "\n";
+    std::cout << "Imagen " << WIDTH << "x" << HEIGHT << " -" << BOLDYELLOW << " Tiempo " << CYAN << end - start << RESET << " segundos\n";
 
     return 0;
 }
 
 // Calcula numero de iteraciones
-int mandelbrot_set(std::complex<double> c)
+int mandelbrot(std::complex<double> c)
 {
     std::complex<double> z = {0, 0};
     int n = 0;

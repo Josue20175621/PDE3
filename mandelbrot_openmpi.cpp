@@ -6,11 +6,10 @@
 #include <algorithm>
 #include <ctime>
 
-// Reset all attributes
-#define RESET "\x1B[0m"
+#define CYAN   "\x1B[36m"
 
-// Cyan
-#define CYN   "\x1B[36m"
+#define BOLDYELLOW "\033[1m\033[33m"
+#define RESET "\x1B[0m"
 
 #define MASTER_RANK 0
 #define MAX_ITERATIONS 80
@@ -38,7 +37,6 @@ int mandelbrot(std::complex<double> c)
     }
     return n;
 }
-
 
 int main(int argc, char *argv[])
 {
@@ -81,9 +79,9 @@ int main(int argc, char *argv[])
 
 	if(rank == MASTER_RANK){
 
-		printf("\n%s Calculando ... %s\n", CYN, RESET);
 		double starttime, endtime;
 		starttime = MPI_Wtime();
+		std::cout << "\n";
 		
 		workers_num = communicator_size - 1;
 		whole_part = WIDTH / workers_num;
@@ -96,7 +94,7 @@ int main(int argc, char *argv[])
 			// Calcula el numero de filas que va a trabajar este proceso
 			rows_num = process_id <= remainder ? whole_part + 1 : whole_part;
 			
-			printf("%sEnvia %d pixeles al proceso %d %s\n", CYN, rows_num * HEIGHT, process_id, RESET);
+			printf("%sEnvia %d pixeles al proceso %d %s\n", BOLDYELLOW, rows_num * HEIGHT, process_id, RESET);
 			
 			// Envia el offset
 			MPI_Send(&offset, 1, MPI_INT, process_id, 0, MPI_COMM_WORLD);
@@ -120,12 +118,11 @@ int main(int argc, char *argv[])
 		}
 		
 		endtime = MPI_Wtime();
-		printf("\nListo\n");
 
-		// Escribe los Magic Bytes 50 33 0A para que los programas sepan que esto es un Portable Pixmap
+		// Escribe el header de un archivo PPM P3 WIDTH HEIGHT 255
 		output << "P3" << std::endl << WIDTH << ' ' << HEIGHT << std::endl << 255 << std::endl;
 		
-		// Escribe el PPM
+		// Por cada pixel
 		for (i = 0; i < WIDTH; i++)
 		{
 			for (k = 0; k < HEIGHT; k += 4)
@@ -133,15 +130,21 @@ int main(int argc, char *argv[])
 				l = std::min(k + 4, HEIGHT);
 				for (j = k; j < l; j++)
 				{
+					// Escribe el color al PPM
 					output << "  " << color[i][j] << "  " << color[i][j] << "  " << color[i][j] << "\n";
 				}
 				output << "\n";
 			}
 		}
 
+		// Cierra el archivo
 		output.close();
+
 		double diff = endtime - starttime;
-		printf("\nImagen %dx%d - %.3f segundos\n", WIDTH, HEIGHT, diff);
+		std::cout << "\n";
+		std::cout << "Se escribio el PPM en el archivo " << BOLDYELLOW << "\"" << filename << "\"" << RESET << "."
+				  << "\n";
+		printf("\nImagen %dx%d - %sTiempo %s%.3f %ssegundos\n", WIDTH, HEIGHT, BOLDYELLOW, CYAN, diff, RESET);
 	}
 	
 	if(rank > MASTER_RANK){

@@ -4,15 +4,23 @@
 #include <fstream>
 #include <chrono>
 
+
+#define CYAN "\033[36m"
+
+#define BOLDYELLOW "\033[1m\033[33m"
+
+#define RESET "\033[0m"
+
 #define MAX_ITERATIONS 80
 
-int mandelbrot_set(std::complex<double> c);
+// Dimensiones de la imagen
+#define WIDTH 500
+#define HEIGHT 500
+
+int mandelbrot(std::complex<double> c);
 
 int main()
 {
-    // Dimensiones de la imagen
-    int width = 500;
-    int height = 500;
 
     // Almacena el color
     int color;
@@ -23,8 +31,8 @@ int main()
     // Class para escribir archivos
     std::ofstream output(filename, std::ios_base::out | std::ios_base::binary);
 
-    // Escribe los Magic Bytes 50 33 0A para que los programas sepan que esto es un Portable Pixmap
-    output << "P3" << std::endl << width << ' ' << height << std::endl << 255 << std::endl;
+    // Escribe el header de un archivo PPM P3 WIDTH HEIGHT 255
+    output << "P3" << std::endl << WIDTH << ' ' << HEIGHT << std::endl << 255 << std::endl;
 
     int x, y;
 
@@ -36,18 +44,18 @@ int main()
     auto start = std::chrono::high_resolution_clock::now();
     
     // Por cada pixel
-    for (x = 0; x < width; x++)
+    for (x = 0; x < WIDTH; x++)
     {
-        for (y = 0; y < height; y++)
+        for (y = 0; y < HEIGHT; y++)
         {
             // Convierte la coordenada del pixel a un numero complejo
             std::complex<double> c = {
-                x_start + ((double)x / (double)width) * (x_end - x_start),
-                y_start + ((double)y / (double)height) * (y_end - y_start)
+                x_start + ((double)x / (double)WIDTH) * (x_end - x_start),
+                y_start + ((double)y / (double)HEIGHT) * (y_end - y_start)
             };
 
             // Calcula numero de iteraciones
-            int iterations = mandelbrot_set(c);
+            int iterations = mandelbrot(c);
             
             // El color depende del numero de iteraciones
             color = 255 - (int)(iterations * 255 / MAX_ITERATIONS);
@@ -60,10 +68,9 @@ int main()
             }
             else
             {
-                // Sino usa un color dependiendo el numero de iteraciones
+                // Color depende del numero de iteraciones
                 output << "  " << color + 40 << "  " << color + 30 << "  " << color + 80 << "\n";
-            }            
-
+            }
         }
     }
     auto end = std::chrono::high_resolution_clock::now();
@@ -71,18 +78,19 @@ int main()
     // Diferencia
     std::chrono::duration<double> diff = end-start;
 
-    // Close the file
+    // Cierra el archivo
     output.close();
 
     std::cout << "\n";
-    std::cout << "Se escribio el PPM en el archivo \"" << filename << "\".\n";
-    std::cout << "Tiempo " << diff.count() << " segundos\n";
+    std::cout << "Se escribio el PPM en el archivo " << BOLDYELLOW << "\"" << filename << "\"" << RESET << "." 
+              << "\n";
+    std::cout << "Imagen " << WIDTH << "x" << HEIGHT << " - " << BOLDYELLOW << "Tiempo " << CYAN << diff.count() << RESET << " segundos\n";
 
     return 0;
 }
 
 // Calcula numero de iteraciones
-int mandelbrot_set(std::complex<double> c)
+int mandelbrot(std::complex<double> c)
 {
     std::complex<double> z = {0, 0};
     int n = 0;
