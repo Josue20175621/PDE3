@@ -59,7 +59,9 @@ int main()
             
             // El color depende del numero de iteraciones
             color = 255 - (int)(iterations * 255 / MAX_ITERATIONS);
-            
+
+            output << "  " << color << "  " << color << "  " << color << "\n";
+            /*
             // Dibuja el punto
             if (iterations == MAX_ITERATIONS)
             {
@@ -69,8 +71,9 @@ int main()
             else
             {
                 // Color depende del numero de iteraciones
-                output << "  " << color + 40 << "  " << color + 30 << "  " << color + 80 << "\n";
+                output << "  " << color + 40 << "  " << color + 30 << "  " << color << "\n";
             }
+            */
         }
     }
     auto end = std::chrono::high_resolution_clock::now();

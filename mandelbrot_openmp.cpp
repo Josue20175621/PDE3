@@ -82,7 +82,7 @@ int main(void)
             for (j = k; j < l; j++)
             {
                 // Escribe el color al PPM
-                output << "  " << color[i][j] << "  " << color[i][j] << "  " << color[i][j] + j << "\n";
+                output << "  " << color[i][j] << "  " << color[i][j] << "  " << color[i][j] << "\n";
             }
             output << "\n";
         }
