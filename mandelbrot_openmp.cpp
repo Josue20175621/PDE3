@@ -17,14 +17,15 @@
 
 #define NUM_THREADS 4
 
+// Almacena el color de cada pixel
+int color[WIDTH][HEIGHT];
+
+
 int mandelbrot(std::complex<double> c);
 
 int main(void)
 {
     double start, end;
-
-    // Almacena el color de cada pixel
-    int color[WIDTH][HEIGHT];
 
     int i;
     int j;
