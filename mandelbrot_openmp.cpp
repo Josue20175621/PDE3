@@ -29,8 +29,6 @@ int main(void)
 
     int i;
     int j;
-    int k;
-    int l;
 
     // Nombre del archivo
     std::string filename = "mandelbrot_openmp.ppm";
@@ -76,16 +74,11 @@ int main(void)
     // Por cada pixel
     for (i = 0; i < WIDTH; i++)
     {
-        for (k = 0; k < HEIGHT; k += 4)
+        for (j = 0; j < HEIGHT; j++)
         {
-            l = std::min(k + 4, HEIGHT);
-            for (j = k; j < l; j++)
-            {
-                // Escribe el color al PPM
-                output << "  " << color[i][j] << "  " << color[i][j] << "  " << color[i][j] << "\n";
-            }
-            output << "\n";
+            output << "  " << color[i][j] << "  " << color[i][j] << "  " << color[i][j] << "\n";
         }
+        output << "\n";
     }
     
     output.close();
